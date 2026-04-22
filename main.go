@@ -6,19 +6,32 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/nwildan922/learn-go-manager/controller"
+	redis "github.com/nwildan922/learn-go-manager/pkg/redis"
 	"github.com/nwildan922/learn-go-manager/routes"
+	"github.com/nwildan922/learn-go-manager/service"
 )
 
 func main() {
 
 	loadEnv()
+	redisClient, err := redis.NewRedisClient(os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PASSWORD"))
+	if err != nil {
+		log.Fatalf("Redis connection failed: %v", err)
+	}
 	log.Println(os.Getenv("APP_NAME"))
 	log.Println(os.Getenv("APP_PORT"))
 
 	port := os.Getenv("APP_PORT")
 
 	e := echo.New()
-	routes.RegisterRoutes(e)
+
+	counterService := service.NewCounterService(redisClient)
+	counterController := controller.NewCounterController(counterService)
+
+	routes.RegisterRoutes(e, &routes.Router{
+		Counter: counterController,
+	})
 
 	e.Logger.Fatal(e.Start(":" + port))
 

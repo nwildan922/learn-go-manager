@@ -5,6 +5,11 @@ import (
 	c "github.com/nwildan922/learn-go-manager/controller"
 )
 
-func RegisterRoutes(e *echo.Echo) {
+type Router struct {
+	Counter *c.CounterController
+}
+
+func RegisterRoutes(e *echo.Echo, rc *Router) {
 	e.GET("/health", c.HealthCheck)
+	e.GET("/counter", rc.Counter.GenerateCounter)
 }
