@@ -6,7 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	"github.com/nwildan922/learn-go-manager/controller"
+	handler "github.com/nwildan922/learn-go-manager/handler"
 	redis "github.com/nwildan922/learn-go-manager/pkg/redis"
 	"github.com/nwildan922/learn-go-manager/routes"
 	"github.com/nwildan922/learn-go-manager/service"
@@ -27,10 +27,10 @@ func main() {
 	e := echo.New()
 
 	counterService := service.NewCounterService(redisClient)
-	counterController := controller.NewCounterController(counterService)
+	counterHandler := handler.NewCounterHandler(counterService)
 
 	routes.RegisterRoutes(e, &routes.Router{
-		Counter: counterController,
+		Counter: counterHandler,
 	})
 
 	e.Logger.Fatal(e.Start(":" + port))

@@ -2,14 +2,14 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
-	c "github.com/nwildan922/learn-go-manager/controller"
+	handler "github.com/nwildan922/learn-go-manager/handler"
 )
 
 type Router struct {
-	Counter *c.CounterController
+	Counter *handler.CounterHandler
 }
 
 func RegisterRoutes(e *echo.Echo, rc *Router) {
-	e.GET("/health", c.HealthCheck)
+	e.GET("/health", handler.HealthCheck)
 	e.GET("/counter", rc.Counter.GenerateCounter)
 }

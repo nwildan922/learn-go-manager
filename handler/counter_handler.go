@@ -5,17 +5,17 @@ import (
 	"github.com/nwildan922/learn-go-manager/service"
 )
 
-type CounterController struct {
+type CounterHandler struct {
 	service *service.CounterService
 }
 
-func NewCounterController(s *service.CounterService) *CounterController {
-	return &CounterController{
+func NewCounterHandler(s *service.CounterService) *CounterHandler {
+	return &CounterHandler{
 		service: s,
 	}
 }
 
-func (c *CounterController) GenerateCounter(ctx echo.Context) error {
+func (c *CounterHandler) GenerateCounter(ctx echo.Context) error {
 	res := c.service.Count()
 	return ctx.JSON(res.Code, res)
 }
