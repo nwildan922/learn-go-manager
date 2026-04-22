@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	handler "github.com/nwildan922/learn-go-manager/handler"
+	grpc "github.com/nwildan922/learn-go-manager/pkg/grpc"
 	redis "github.com/nwildan922/learn-go-manager/pkg/redis"
 	"github.com/nwildan922/learn-go-manager/routes"
 	"github.com/nwildan922/learn-go-manager/service"
@@ -19,6 +20,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Redis connection failed: %v", err)
 	}
+
+	counterGrpc, err := grpc.NewCounterClient(os.Getenv("GRPC_COUNTER_SERVICE_ADDRESS"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer counterGrpc.Close()
+
 	log.Println(os.Getenv("APP_NAME"))
 	log.Println(os.Getenv("APP_PORT"))
 
@@ -26,7 +34,7 @@ func main() {
 
 	e := echo.New()
 
-	counterService := service.NewCounterService(redisClient)
+	counterService := service.NewCounterService(redisClient, counterGrpc)
 	counterHandler := handler.NewCounterHandler(counterService)
 
 	routes.RegisterRoutes(e, &routes.Router{
